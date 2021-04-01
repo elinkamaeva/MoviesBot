@@ -33,6 +33,8 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 	bot.answer_callback_query(callback_query.id)
 	bot.send_message(callback_query.from_user.id, 'Введите название интересующей вас страны')
 
+USERS = set()
+
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
 	bot.reply_to(message, "Howdy, how are you doing?")
@@ -40,6 +42,14 @@ def send_welcome(message):
 @bot.message_handler(content_types=['text'])
 def send_text(message):
 	if message.text.lower() == 'привет':
+		name = message.from_user.first_name
+		bot.send_message(message.chat.id, f'Привет, {name}')
+		if message.from_user.id in USERS:
+			markup = types.ReplyKeyboardMarkup(row_width=2)
+			itembtn1 = types.KeyboardButton('Да')
+			itembtn2 = types.KeyboardButton('Нет')
+			markup.add(itembtn1, itembtn2)
+			bot.send_message(message.chat.id, "Понравился ли Вам фильм?", reply_markup=markup)
 		markup = types.InlineKeyboardMarkup()
 		item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
 		item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
@@ -47,14 +57,9 @@ def send_text(message):
 		item_country = types.InlineKeyboardButton('По стране создания', callback_data='country')
 		markup.add(item_genre, item_rate, item_year, item_country)
 		bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
+		USERS.add(message.from_user.id)
 	elif message.text.lower() == 'пока':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, 'Прощай, создатель ' + name)
-	elif message.text.lower() == 'хочу поставить оценку фильму':
-		markup = types.ReplyKeyboardMarkup(row_width=2)
-		itembtn1 = types.KeyboardButton('Да')
-		itembtn2 = types.KeyboardButton('Нет')
-		markup.add(itembtn1, itembtn2)
-		bot.send_message(message.chat.id, "Вам понравился фильм?", reply_markup=markup)
 
 bot.polling()
