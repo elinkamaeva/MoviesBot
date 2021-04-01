@@ -50,5 +50,11 @@ def send_text(message):
 	elif message.text.lower() == 'пока':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, 'Прощай, создатель ' + name)
+	elif message.text.lower() == 'хочу поставить оценку фильму':
+		markup = types.ReplyKeyboardMarkup(row_width=2)
+		itembtn1 = types.KeyboardButton('Да')
+		itembtn2 = types.KeyboardButton('Нет')
+		markup.add(itembtn1, itembtn2)
+		bot.send_message(message.chat.id, "Вам понравился фильм?", reply_markup=markup)
 
 bot.polling()
