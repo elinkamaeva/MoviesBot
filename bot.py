@@ -45,7 +45,7 @@ def send_text(message):
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Привет, {name}')
 		if message.from_user.id in USERS:
-			markup = types.ReplyKeyboardMarkup(row_width=2)
+			markup = types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True)
 			itembtn1 = types.KeyboardButton('Да')
 			itembtn2 = types.KeyboardButton('Нет')
 			markup.add(itembtn1, itembtn2)
