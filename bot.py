@@ -1,6 +1,6 @@
 import telebot
 from telebot import types
-import secret
+from secret import TOKEN
 
 bot = telebot.TeleBot(TOKEN)
 
