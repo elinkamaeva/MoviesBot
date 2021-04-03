@@ -43,12 +43,6 @@ def send_text(message):
 	if message.text.lower() == 'привет':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Привет, {name}')
-		if message.from_user.id in USERS:
-			markup = types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True)
-			itembtn1 = types.KeyboardButton('Да')
-			itembtn2 = types.KeyboardButton('Нет')
-			markup.add(itembtn1, itembtn2)
-			bot.send_message(message.chat.id, "Понравился ли Вам фильм?", reply_markup=markup)
 		markup = types.InlineKeyboardMarkup()
 		item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
 		item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
@@ -60,5 +54,20 @@ def send_text(message):
 	elif message.text.lower() == 'пока':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, 'Прощай, создатель ' + name)
+
+# def find_out_rate(message):
+	# если выбран фильм
+		# def job():
+			# markup = types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True)
+			# itembtn1 = types.KeyboardButton('Да')
+			# itembtn2 = types.KeyboardButton('Нет')
+			# markup.add(itembtn1, itembtn2)
+			# bot.send_message(message.chat.id, "Понравился ли Вам фильм?", reply_markup=markup)
+			# return schedule.CancelJob
+	# now = datetime.now().strftime('%H:%M:%S')
+	# schedule.every().day.at(now).do(job)
+	# while True:
+		# schedule.run_pending()
+		# time.sleep(1)
 
 bot.polling()
