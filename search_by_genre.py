@@ -22,4 +22,6 @@ def find_my_genre(user_genre, user_type):
 
 	print(search_genre)
 
-print(find_my_genre('драма', 'фильм'))
+user_genre = input()
+user_type = input()
+print(find_my_genre(user_genre, user_type))
