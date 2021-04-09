@@ -1,5 +1,4 @@
 import requests
-import re
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 headers_auth = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
