@@ -28,11 +28,13 @@ def find_my_genre(user_genre, user_type):
 		page_count = search_genre['pagesCount']
 		films = search_genre['films']
 		j = 0
+		
 		while answer == 'дальше' and j < 18: #цикл вывода фильмов до тех пор, пока список не закончится
 			for _ in range(3):
 				film1 = films[j]
 				film2 = films[j+1]
 				film3 = films[j+2]
+				
 			print(film1, film2, film3) #пока полный вывод фильмов в виде словаря
 			j += 3
 			answer = input()
