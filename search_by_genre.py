@@ -25,7 +25,6 @@ def find_my_genre(user_genre, user_type):
 		new_link = new_link[:-1] + str(i+1) #создаём нью ссылку
 		search_genre = requests.get(new_link, headers=headers_auth)
 		search_genre = search_genre.json()
-		page_count = search_genre['pagesCount']
 		films = search_genre['films']
 		j = 0
 		
