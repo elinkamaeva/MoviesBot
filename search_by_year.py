@@ -35,4 +35,6 @@ def find_by_year(user_year, user_type):
 			j += 3
 			answer = input()
 
-print(find_by_year(1940, 'фильм'))
+user_year = input()
+user_type = input()
+print(find_by_year(user_year, user_type))
