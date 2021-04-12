@@ -29,7 +29,7 @@ def find_my_genre(user_genre, user_type):
 		films = search_genre['films']
 		j = 0
 		
-		while answer == 'дальше' and j < len(films): #цикл вывода фильмов до тех пор, пока список не закончится
+		while answer == 'дальше' and j < len(films) - 2: #цикл вывода фильмов до тех пор, пока список не закончится
 			for _ in range(3):
 				film1 = films[j]
 				film2 = films[j+1]
