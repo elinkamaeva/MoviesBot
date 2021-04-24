@@ -1,7 +1,7 @@
 import requests
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-headers_auth = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
+headers_auth = {'X-API-KEY': 'TOKEN'}
 
 def find_by_country(user_rate, user_type):
 	types = {'фильм': 'FILM', 'сериал': 'TV_SHOW', 'любое': 'ALL'}
