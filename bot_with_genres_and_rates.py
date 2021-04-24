@@ -22,16 +22,19 @@ def find_my_genre(user_genre, user_type, number):
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
 	page_count = search_genre['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
-	if (number >= 20) and (int(new_link[-1]) <= page_count):
+	
+	if (number >= 20) and (int(new_link[-1]) <= page_count): #проверяем номер и меняем номер страницы в ссылке, если он больше 20
 		new_page = int(new_link[-1]) + (number // 20)
 		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+		
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
 	films = search_genre['films']
-	film = films[number % 20]
+	film = films[number % 20] #находим фильм
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
 	text = ''
-	for m in message_film.items():
+	
+	for m in message_film.items(): #генерируем сообщение бота
 		if type(m[1]) == list:
 			list_values = []
 			for c in m[1]:
@@ -49,15 +52,18 @@ def find_by_rate(user_rate, number):
   search_rate = requests.get(new_link, headers=headers_auth)
   search_rate = search_rate.json()
   page_count = search_rate['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
-  if (number >= 20) and (int(new_link[-1]) <= page_count):
+
+  if (number >= 20) and (int(new_link[-1]) <= page_count): 
     new_page = int(new_link[-1]) + (number // 20)
     new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+	
   search_rate = requests.get(new_link, headers=headers_auth)
   search_rate = search_rate.json()
   films = search_rate['films']
   film = films[number % 20]
   message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
   text = ''
+	
   for m in message_film.items():
     if type(m[1]) == list:
       list_values = []
@@ -71,6 +77,8 @@ def find_by_rate(user_rate, number):
   return  text, film['posterUrl']
 
 genres = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
+rates = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
+eng_rates = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
 
 bot = telebot.TeleBot('1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc')
 
@@ -109,6 +117,7 @@ def callback_inline(c):
         f = films_mood.keys()[num]
         genres_mood = films_mood[f]
         bot.send_message(c.from_user.id, num)
+	
       elif c.data.startswith('genres'):
         markup_data = types.InlineKeyboardMarkup()
         again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
@@ -122,6 +131,7 @@ def callback_inline(c):
         bot.send_message(c.from_user.id, films)
         bot.send_photo(c.from_user.id, url)
         bot.send_message(c.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
+	
       elif c.data.startswith('rates'):
         num = int(c.data[-1])
         rate = rates[num]
@@ -157,23 +167,9 @@ def send_text(message):
 		markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
 		bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
 		USERS.add(message.from_user.id)
+		
 	elif message.text.lower() == 'пока':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Прощай, создатель {name}')
-
-# def find_out_rate(message):
-	# если выбран фильм
-		# def job():
-			# markup = types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True)
-			# itembtn1 = types.KeyboardButton('Да')
-			# itembtn2 = types.KeyboardButton('Нет')
-			# markup.add(itembtn1, itembtn2)
-			# bot.send_message(message.chat.id, "Понравился ли Вам фильм?", reply_markup=markup)
-			# return schedule.CancelJob
-	# now = datetime.now().strftime('%H:%M:%S')
-	# schedule.every().day.at(now).do(job)
-	# while True:
-		# schedule.run_pending()
-		# time.sleep(1)
 
 bot.polling()
