@@ -30,6 +30,12 @@ def find_my_genre(user_genre):
 	number_of_films = (page_count-1)*20 + last_page_films
 
 	number = randint(0, number_of_films-1)
+	
+	if number in list_of_numbers:
+		while number not in list_of_numbers:
+			number = randint(1, number_of_films)
+	
+	list_of_numbers.append(number)
 
 	if (number >= 20) and (int(new_link[-1]) <= page_count): #проверяем номер и меняем номер страницы в ссылке, если он больше 20
 		new_page = int(new_link[-1]) + (number // 20)
@@ -87,8 +93,8 @@ def find_by_rate(user_rate):
 	if number in list_of_numbers:
 		while number not in list_of_numbers:
 			number = randint(1, number_of_films)
-	else:
-		list_of_numbers.append(number)
+
+	list_of_numbers.append(number)
 
 	if (number >= 20) and (int(new_link[-1]) <= page_count): # переход на новую страницу
 		new_page = int(new_link[-1]) + (number // 20)
