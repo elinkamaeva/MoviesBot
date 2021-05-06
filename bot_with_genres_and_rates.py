@@ -93,7 +93,7 @@ genres = ['драма', 'комедия', 'ужасы', 'боевик', 'дет�
 rates = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
 eng_rates = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
 
-bot = telebot.TeleBot('1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc')
+bot = telebot.TeleBot(TOKEN)
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
 def process_callback_button1(callback_query: types.CallbackQuery):
