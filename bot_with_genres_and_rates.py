@@ -6,10 +6,7 @@ import requests
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 headers_auth = {'X-API-KEY': 'TOKEN'}
 
-def find_my_genre(user_genre, user_type, number):
-	types = {'фильм': 'FILM', 'сериал': 'TV_SHOW', 'любое': 'ALL'}
-	type_ = types[user_type]
-
+def find_my_genre(user_genre, number):
 	genre_ids = requests.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/filters', headers=headers_auth)
 	genre_ids_json = genre_ids.json()['genres']
 
@@ -17,8 +14,8 @@ def find_my_genre(user_genre, user_type, number):
 		if genre['genre'] == user_genre:
 			genre_id = genre['id']
 
-	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
-	new_link = link.replace('genre', 'genre=' + str(genre_id)).replace('type', 'type=' + type_) #создаём ссылку
+	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
+	new_link = link.replace('genre', 'genre=' + str(genre_id)) #создаём ссылку
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
 	page_count = search_genre['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
@@ -26,6 +23,9 @@ def find_my_genre(user_genre, user_type, number):
 	if (number >= 20) and (int(new_link[-1]) <= page_count): #проверяем номер и меняем номер страницы в ссылке, если он больше 20
 		new_page = int(new_link[-1]) + (number // 20)
 		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+
+	elif page_count > int(new_link[-1]):
+		return False, False, False
 		
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
@@ -44,37 +44,50 @@ def find_my_genre(user_genre, user_type, number):
 		else:
 			text += f'{m[0]}: {m[1]}' + '\n'
 
-	return  text, film['posterUrl']
+	film_id = film['filmId']
+	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
+	get_trailer = requests.get(link_trailer, headers=headers_auth)
+	get_trailer = get_trailer.json()
+
+	return  text, film['posterUrl'], get_trailer['trailers'][0]['url']
 
 def find_by_rate(user_rate, number):
-  link = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=&page=1'
-  new_link = link.replace('type=', f'type={user_rate}')
-  search_rate = requests.get(new_link, headers=headers_auth)
-  search_rate = search_rate.json()
-  page_count = search_rate['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
+	link = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=&page=1'
+	new_link = link.replace('type=', f'type={user_rate}')
+	search_rate = requests.get(new_link, headers=headers_auth)
+	search_rate = search_rate.json()
+	page_count = search_rate['pagesCount'] # количество доступных страниц фильмов, по 20 фильмов на странице
 
-  if (number >= 20) and (int(new_link[-1]) <= page_count): 
-    new_page = int(new_link[-1]) + (number // 20)
-    new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
-	
-  search_rate = requests.get(new_link, headers=headers_auth)
-  search_rate = search_rate.json()
-  films = search_rate['films']
-  film = films[number % 20]
-  message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
-  text = ''
-	
-  for m in message_film.items():
-    if type(m[1]) == list:
-      list_values = []
-      for c in m[1]:
-        list_values.append(list(c.values())[0])
-      values = ', '.join(list_values)
-      text += f'{m[0]}: {values}' + '\n'
-    else:
-      text += f'{m[0]}: {m[1]}' + '\n'
+	if (number >= 20) and (int(new_link[-1]) <= page_count): # переход на новую страницу
+		new_page = int(new_link[-1]) + (number // 20)
+		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
 
-  return  text, film['posterUrl']
+	elif page_count > int(new_link[-1]):
+		return False, False, False
+
+	search_rate = requests.get(new_link, headers=headers_auth)
+	search_rate = search_rate.json()
+	films = search_rate['films']
+	film = films[number % 20]
+	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
+	text = ''
+
+	for m in message_film.items():
+		if type(m[1]) == list:
+			list_values = []
+			for c in m[1]:
+				list_values.append(list(c.values())[0])
+				values = ', '.join(list_values)
+				text += f'{m[0]}: {values}' + '\n'
+		else:
+		  	text += f'{m[0]}: {m[1]}' + '\n'
+
+	film_id = film['filmId']
+	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
+	get_trailer = requests.get(link_trailer, headers=headers_auth)
+	get_trailer = get_trailer.json()
+
+	return  text, film['posterUrl'], get_trailer['trailers'][0]['url']
 
 genres = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 rates = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
@@ -111,41 +124,53 @@ j = -1
 
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
-  if c.message:
-      if c.data.startswith('mood'):
-        num = c.data[-1]
-        f = films_mood.keys()[num]
-        genres_mood = films_mood[f]
-        bot.send_message(c.from_user.id, num)
-	
-      elif c.data.startswith('genres'):
-        markup_data = types.InlineKeyboardMarkup()
-        again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
-        all = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
-        markup_data.add(again, all)
-        global j
-        j += 1
-        num = int(c.data[-1])
-        genre = genres[num]
-        films, url = find_my_genre(genre, 'фильм', j)
-        bot.send_message(c.from_user.id, films)
-        bot.send_photo(c.from_user.id, url)
-        bot.send_message(c.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
-	
-      elif c.data.startswith('rates'):
-        num = int(c.data[-1])
-        rate = rates[num]
-        rate_to_find = eng_rates[rate]
-        markup_data = types.InlineKeyboardMarkup()
-        again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
-        all = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
-        markup_data.add(again, all)
-        j += 1
-        num = int(c.data[-1])
-        films, url = find_by_rate(rate_to_find, j)
-        bot.send_message(c.from_user.id, films)
-        bot.send_photo(c.from_user.id, url)
-        bot.send_message(c.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
+	if c.message:
+		if c.data.startswith('mood'):
+			num = c.data[-1]
+			f = films_mood.keys()[num]
+			genres_mood = films_mood[f]
+			bot.send_message(c.from_user.id, num)
+
+		elif c.data.startswith('genres'):
+			markup_data = types.InlineKeyboardMarkup()
+			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
+			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
+			markup_data.add(again, all_)
+			global j
+			j += 1
+			num = int(c.data[-1])
+			genre = genres[num]
+			films, poster, trailer = find_my_genre(genre, j)
+
+			if films == False:
+				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
+
+			else:
+				bot.send_message(c.from_user.id, films)
+				bot.send_photo(c.from_user.id, poster)
+				bot.send_message(c.from_user.id, f'Трейлер фильма:\n{trailer}')
+				bot.send_message(c.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
+
+		elif c.data.startswith('rates'):
+			num = int(c.data[-1])
+			rate = rates[num]
+			rate_to_find = eng_rates[rate]
+			markup_data = types.InlineKeyboardMarkup()
+			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
+			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
+			markup_data.add(again, all_)
+			j += 1
+			num = int(c.data[-1])
+			films, poster, trailer = find_by_rate(rate_to_find, j)
+
+			if films == False:
+				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
+				
+			else:	
+				bot.send_message(c.from_user.id, films)
+				bot.send_photo(c.from_user.id, poster)
+				bot.send_message(c.from_user.id, f'Трейлер фильма:\n{trailer}')
+				bot.send_message(c.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
             
 USERS = set()
 
