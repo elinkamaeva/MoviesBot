@@ -24,7 +24,7 @@ def find_my_genre(user_genre, number):
 		new_page = int(new_link[-1]) + (number // 20)
 		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
 
-	elif page_count > int(new_link[-1]):
+	elif page_count < int(new_link[-1]):
 		return False, False, False
 		
 	search_genre = requests.get(new_link, headers=headers_auth)
@@ -62,7 +62,7 @@ def find_by_rate(user_rate, number):
 		new_page = int(new_link[-1]) + (number // 20)
 		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
 
-	elif page_count > int(new_link[-1]):
+	elif page_count < int(new_link[-1]):
 		return False, False, False
 
 	search_rate = requests.get(new_link, headers=headers_auth)
