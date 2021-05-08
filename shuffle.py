@@ -28,6 +28,9 @@ def find_my_genre(user_genre):
 	search_rate = requests.get(new_link, headers=headers_auth).json()
 	last_page_films = len(search_rate['films'])
 	number_of_films = (page_count-1) * 20 + last_page_films
+	
+	if len(list_of_numbers) == number_of_films:
+		return False, False, False
 
 	number = randint(0, number_of_films-1)
 
@@ -40,9 +43,6 @@ def find_my_genre(user_genre):
 	if (number >= 20) and (int(new_link[-1]) <= page_count): #проверяем номер и меняем номер страницы в ссылке, если он больше 20
 		new_page = int(new_link[-1]) + (number // 20)
 		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
-
-	elif page_count < int(new_link[-1]):
-		return False, False, False
 		
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
