@@ -112,7 +112,7 @@ def find_by_rate(user_rate):
 			list_values = []
 			for c in m[1]:
 				list_values.append(list(c.values())[0])
-				values = ', '.join(list_values)
+			values = ', '.join(list_values)
 			text += f'{m[0]}: {values}' + '\n'
 		else:
 		  	text += f'{m[0]}: {m[1]}' + '\n'
