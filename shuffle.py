@@ -40,9 +40,8 @@ def find_my_genre(user_genre):
 
 	list_of_numbers.append(number)
 
-	if (number >= 20) and (int(new_link[-1]) <= page_count): #проверяем номер и меняем номер страницы в ссылке, если он больше 20
-		new_page = int(new_link[-1]) + (number // 20)
-		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+	new_page = int(new_link[-1]) + (number // 20) + 1
+	new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
 		
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
@@ -96,9 +95,8 @@ def find_by_rate(user_rate):
 
 	list_of_numbers.append(number)
 
-	if (number >= 20) and (int(new_link[-1]) <= page_count): # переход на новую страницу
-		new_page = int(new_link[-1]) + (number // 20)
-		new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+	new_page = int(new_link[-1]) + (number // 20) + 1
+	new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
 
 	search_rate = requests.get(new_link, headers=headers_auth)
 	search_rate = search_rate.json()
