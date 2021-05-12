@@ -5,12 +5,12 @@ import requests
 from random import randint
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-headers_auth = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
+HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
 
 list_of_numbers = []
 
 def find_my_genre(user_genre):
-	genre_ids = requests.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/filters', headers=headers_auth)
+	genre_ids = requests.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/filters', headers=HEADERS_AUTH)
 	genre_ids_json = genre_ids.json()['genres']
 
 	for genre in genre_ids_json:
@@ -19,13 +19,13 @@ def find_my_genre(user_genre):
 
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
 	new_link = link.replace('genre', 'genre=' + str(genre_id)) #создаём ссылку
-	search_genre = requests.get(new_link, headers=headers_auth)
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
 	page_count = search_genre['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
 	
 	new_link = new_link.replace('page=1', f'page={page_count}')
 
-	search_rate = requests.get(new_link, headers=headers_auth).json()
+	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
 	last_page_films = len(search_rate['films'])
 	number_of_films = (page_count-1) * 20 + last_page_films # количество фильмов
 	
@@ -43,7 +43,7 @@ def find_my_genre(user_genre):
 	new_page = (number // 20) + 1
 	new_link = new_link.replace(new_link[-6:], f'page={new_page}') # создание ссылки с нужной страницей фильма
 		
-	search_genre = requests.get(new_link, headers=headers_auth)
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
 	films = search_genre['films']
 	film = films[number % 20] #находим фильм
@@ -62,7 +62,7 @@ def find_my_genre(user_genre):
 
 	film_id = film['filmId']
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
-	get_trailer = requests.get(link_trailer, headers=headers_auth)
+	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
 
 	if len(get_trailer['trailers']) != 0:
@@ -74,7 +74,7 @@ def find_my_genre(user_genre):
 def find_by_rate(user_rate):
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=&page=1'
 	new_link = link.replace('type=', f'type={user_rate}')
-	search_rate = requests.get(new_link, headers=headers_auth)
+	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
 	search_rate = search_rate.json()
 	page_count = search_rate['pagesCount'] # количество доступных страниц фильмов, до 20 фильмов на странице
 	
@@ -96,9 +96,9 @@ def find_by_rate(user_rate):
 	list_of_numbers.append(number)
 
 	new_page = int(new_link[-1]) + (number // 20) + 1
-	new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+	new_link = new_link.replace(new_link[-6], f'page={new_page}')
 
-	search_rate = requests.get(new_link, headers=headers_auth)
+	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
 	search_rate = search_rate.json()
 	films = search_rate['films']
 	film = films[number % 20]
@@ -117,7 +117,7 @@ def find_by_rate(user_rate):
 
 	film_id = film['filmId']
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
-	get_trailer = requests.get(link_trailer, headers=headers_auth)
+	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
 
 	if len(get_trailer['trailers']) != 0:
@@ -130,7 +130,7 @@ GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'дет�
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
 ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
 
-TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
+TOKEN = 'TOKEN'
 bot = telebot.TeleBot(TOKEN)
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
@@ -139,7 +139,7 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 	markup_genres = types.InlineKeyboardMarkup()
 	i = 0
 	for g in GENRES:
-		markup_genres.add(types.InlineKeyboardButton(g, callback_data='genres' + str(i)))
+		markup_genres.add(types.InlineKeyboardButton(g, callback_data=f'genres{i}'))
 		i += 1
 	bot.send_message(callback_query.from_user.id, 'Выберите жанр:', reply_markup=markup_genres)
  
@@ -149,7 +149,7 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 	markup_rates = types.InlineKeyboardMarkup()
 	i = 0
 	for r in RATES:
-		markup_rates.add(types.InlineKeyboardButton(r, callback_data='rates' + str(i)))
+		markup_rates.add(types.InlineKeyboardButton(r, callback_data=f'rates{i}'))
 		i += 1
 	bot.send_message(callback_query.from_user.id, 'Выберите интересующий вас рейтинг', reply_markup=markup_rates)
 
