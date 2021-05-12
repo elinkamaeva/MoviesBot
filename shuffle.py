@@ -5,7 +5,7 @@ import requests
 from random import randint
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
+HEADERS_AUTH = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
 
 list_of_numbers = []
 
@@ -18,7 +18,7 @@ def find_my_genre(user_genre):
 			genre_id = genre['id']
 
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
-	new_link = link.replace('genre', 'genre=' + str(genre_id)) #создаём ссылку
+	new_link = link.replace('genre', f'genre={genre_id}') #создаём ссылку
 	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
 	page_count = search_genre['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
@@ -41,7 +41,8 @@ def find_my_genre(user_genre):
 	list_of_numbers.append(number)
 
 	new_page = (number // 20) + 1
-	new_link = new_link.replace(new_link[-6:], f'page={new_page}') # создание ссылки с нужной страницей фильма
+	new_link = new_link.replace(new_link[-1], str(new_page)) # создание ссылки с нужной страницей фильма
+	print(new_link)
 		
 	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
@@ -96,7 +97,7 @@ def find_by_rate(user_rate):
 	list_of_numbers.append(number)
 
 	new_page = int(new_link[-1]) + (number // 20) + 1
-	new_link = new_link.replace(new_link[-6], f'page={new_page}')
+	new_link = new_link.replace(new_link[-1], str(new_page))
 
 	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
 	search_rate = search_rate.json()
@@ -130,7 +131,7 @@ GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'дет�
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
 ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
 
-TOKEN = 'TOKEN'
+TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
 bot = telebot.TeleBot(TOKEN)
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
@@ -175,7 +176,7 @@ def callback_inline(c):
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
 			num = int(c.data[-1])
-			genre = genres[num]
+			genre = GENRES[num]
 			films, poster, trailer = find_my_genre(genre)
 
 			if films == False:
