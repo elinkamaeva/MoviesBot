@@ -5,7 +5,7 @@ import requests
 from random import randint
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-headers_auth = {'X-API-KEY': 'TOKEN'}
+headers_auth = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
 
 list_of_numbers = []
 
@@ -27,21 +27,21 @@ def find_my_genre(user_genre):
 
 	search_rate = requests.get(new_link, headers=headers_auth).json()
 	last_page_films = len(search_rate['films'])
-	number_of_films = (page_count-1) * 20 + last_page_films
+	number_of_films = (page_count-1) * 20 + last_page_films # количество фильмов
 	
-	if len(list_of_numbers) == number_of_films:
+	if len(list_of_numbers) == number_of_films: # проверка оставшихся фильмов
 		return False, False, False
 
-	number = randint(0, number_of_films-1)
+	number = randint(0, number_of_films-1) # выбор случайного фильма
 
-	if number in list_of_numbers:
-		while number not in list_of_numbers:
+	if number in list_of_numbers: # проверка, не был ли этот фильм уже показан
+		while number in list_of_numbers:
 			number = randint(1, number_of_films)
 
 	list_of_numbers.append(number)
 
-	new_page = int(new_link[-1]) + (number // 20) + 1
-	new_link = new_link.replace('page=' + new_link[-1], f'page={new_page}')
+	new_page = (number // 20) + 1
+	new_link = new_link.replace(new_link[-6:], f'page={new_page}') # создание ссылки с нужной страницей фильма
 		
 	search_genre = requests.get(new_link, headers=headers_auth)
 	search_genre = search_genre.json()
@@ -90,7 +90,7 @@ def find_by_rate(user_rate):
 	number = randint(0, number_of_films-1)
 
 	if number in list_of_numbers:
-		while number not in list_of_numbers:
+		while number in list_of_numbers:
 			number = randint(1, number_of_films)
 
 	list_of_numbers.append(number)
@@ -126,11 +126,11 @@ def find_by_rate(user_rate):
 	else: 
 		return text, film['posterUrl'], False
 
-genres = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
-rates = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
-eng_rates = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
+GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
+RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
+ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
 
-TOKEN = 'TOKEN'
+TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
 bot = telebot.TeleBot(TOKEN)
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
@@ -138,7 +138,7 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 	bot.answer_callback_query(callback_query.id)
 	markup_genres = types.InlineKeyboardMarkup()
 	i = 0
-	for g in genres:
+	for g in GENRES:
 		markup_genres.add(types.InlineKeyboardButton(g, callback_data='genres' + str(i)))
 		i += 1
 	bot.send_message(callback_query.from_user.id, 'Выберите жанр:', reply_markup=markup_genres)
@@ -148,7 +148,7 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 	bot.answer_callback_query(callback_query.id)
 	markup_rates = types.InlineKeyboardMarkup()
 	i = 0
-	for r in rates:
+	for r in RATES:
 		markup_rates.add(types.InlineKeyboardButton(r, callback_data='rates' + str(i)))
 		i += 1
 	bot.send_message(callback_query.from_user.id, 'Выберите интересующий вас рейтинг', reply_markup=markup_rates)
@@ -190,8 +190,8 @@ def callback_inline(c):
 
 		elif c.data.startswith('rates'):
 			num = int(c.data[-1])
-			rate = rates[num]
-			rate_to_find = eng_rates[rate]
+			rate = RATES[num]
+			rate_to_find = ENG_RATES[rate]
 			markup_data = types.InlineKeyboardMarkup()
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
@@ -212,7 +212,7 @@ USERS = set()
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-	bot.reply_to(message, "Howdy, how are you doing?")
+	bot.reply_to(message, 'Чтобы начать, напиши "привет"')
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
