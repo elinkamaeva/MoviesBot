@@ -5,7 +5,7 @@ import requests
 from random import randint
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-HEADERS_AUTH = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
+HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
 
 list_of_numbers = []
 
@@ -131,7 +131,7 @@ GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'дет�
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
 ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
 
-TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
+TOKEN = 'TOKEN'
 bot = telebot.TeleBot(TOKEN)
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
