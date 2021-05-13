@@ -182,6 +182,8 @@ def go_away(callback_query: types.CallbackQuery):
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
 	if c.message:
+		global movie_id
+		global movie_name
 		if c.data.startswith('mood'):
 			num = c.data[-1]
 			f = films_mood.keys()[num]
@@ -195,8 +197,6 @@ def callback_inline(c):
 			markup_data.add(again, all_)
 			num = int(c.data[-1])
 			genre = GENRES[num]
-			global movie_id
-			global movie_name
 			films, poster, trailer, movie_id, movie_name = find_my_genre(genre)
 
 			if films == False:
@@ -217,8 +217,6 @@ def callback_inline(c):
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
-			global movie_id
-			global movie_name
 			films, poster, trailer, movie_id, movie_name = find_by_rate(rate_to_find)
 
 			if films == False:
