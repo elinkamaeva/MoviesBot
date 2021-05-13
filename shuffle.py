@@ -68,6 +68,10 @@ def find_my_genre(user_genre):
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
+	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{film_id}/similars'
+	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
+	get_similars = get_similars.json()
+	print(get_similars)
 
 	if len(get_trailer['trailers']) != 0:
 		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
@@ -124,6 +128,10 @@ def find_by_rate(user_rate):
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
+	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{film_id}/similars'
+	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
+	get_similars = get_similars.json()
+	print(get_similars)
 
 	if len(get_trailer['trailers']) != 0:
 		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
