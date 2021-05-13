@@ -3,6 +3,8 @@ from telebot import types
 #from secret import TOKEN
 import requests
 from random import randint
+from dbhelper import init_db
+from dbhelper import add_information
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
@@ -62,15 +64,16 @@ def find_my_genre(user_genre):
 			text += f'{m[0]}: {m[1]}' + '\n'
 
 	film_id = film['filmId']
+	film_name = film['nameRu']
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
 
 	if len(get_trailer['trailers']) != 0:
-		return text, film['posterUrl'], get_trailer['trailers'][0]['url']
+		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
 
 	else: 
-		return text, film['posterUrl'], False
+		return text, film['posterUrl'], False, film_id, film_name
 
 def find_by_rate(user_rate):
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=&page=1'
@@ -117,15 +120,16 @@ def find_by_rate(user_rate):
 		  	text += f'{m[0]}: {m[1]}' + '\n'
 
 	film_id = film['filmId']
+	film_name = film['nameRu']
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
 
 	if len(get_trailer['trailers']) != 0:
-		return text, film['posterUrl'], get_trailer['trailers'][0]['url']
+		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
 
 	else: 
-		return text, film['posterUrl'], False
+		return text, film['posterUrl'], False, film_id, film_name
 
 GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
@@ -133,6 +137,8 @@ ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_F
 
 TOKEN = 'TOKEN'
 bot = telebot.TeleBot(TOKEN)
+
+init_db()
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
 def process_callback_button1(callback_query: types.CallbackQuery):
@@ -153,6 +159,9 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 		markup_rates.add(types.InlineKeyboardButton(r, callback_data=f'rates{i}'))
 		i += 1
 	bot.send_message(callback_query.from_user.id, 'Выберите интересующий вас рейтинг', reply_markup=markup_rates)
+	
+movie_id = 0
+movie_name = ''
 
 @bot.callback_query_handler(func=lambda c: c.data == 'Приятного просмотра!')
 def go_away(callback_query: types.CallbackQuery):
@@ -160,6 +169,15 @@ def go_away(callback_query: types.CallbackQuery):
 	global list_of_numbers
 	list_of_numbers = []
 	bot.send_message(callback_query.from_user.id, 'Приятного просмотра!')
+	user_id = callback_query.from_user.id
+	user_name = callback_query.from_user.username
+	print(f'Запиши, что пользователь {user_name} с id {user_id} посмотрел фильм "{movie_name}" с id {movie_id}')
+	add_information(
+		user_id = user_id,
+		user_name = user_name,
+		movie_id = movie_id,
+		movie_name = movie_name
+	)
 
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
@@ -177,7 +195,9 @@ def callback_inline(c):
 			markup_data.add(again, all_)
 			num = int(c.data[-1])
 			genre = GENRES[num]
-			films, poster, trailer = find_my_genre(genre)
+			global movie_id
+			global movie_name
+			films, poster, trailer, movie_id, movie_name = find_my_genre(genre)
 
 			if films == False:
 				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
@@ -197,7 +217,9 @@ def callback_inline(c):
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
-			films, poster, trailer = find_by_rate(rate_to_find)
+			global movie_id
+			global movie_name
+			films, poster, trailer, movie_id, movie_name = find_by_rate(rate_to_find)
 
 			if films == False:
 				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
