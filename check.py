@@ -6,7 +6,7 @@ from random import randint
 from dbhelper import init_db
 from dbhelper import add_information
 from dbhelper import add_similar
-from dbhelper import get_information
+from dbhelper import get_movies_ids
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
@@ -261,6 +261,35 @@ def find_by_country(user_country):
 
 	else: 
 		return text, film['posterUrl'], False, film_id, film_name
+	
+def get_recommendation(user_id):
+	lst = get_movies_ids(user_id=user_id)
+	number_of_movies = len(lst)
+	number = randint(0, number_of_movies - 1)  # выбор случайного фильма
+	movie_id = lst[number][0]
+	get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}', headers=HEADERS_AUTH)
+	movie_information = get_information.json()['data']
+	print(movie_information)
+	message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'], 'Страны': movie_information['countries'], 'Жанры': movie_information['genres']}
+	text = ''
+	for m in message.items():
+		if type(m[1]) == list:
+			list_values = []
+			for c in m[1]:
+				list_values.append(list(c.values())[0])
+			values = ', '.join(list_values)
+			text += f'{m[0]}: {values}' + '\n'
+		else:
+			text += f'{m[0]}: {m[1]}' + '\n'
+	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}/videos'
+	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
+	get_trailer = get_trailer.json()
+
+	if len(get_trailer['trailers']) != 0:
+		return text, movie_information['posterUrl'], get_trailer['trailers'][0]['url'], movie_id, movie_information['nameRu']
+
+	else:
+		return text, movie_information['posterUrl'], False, movie_id, movie_information['nameRu']
 
 GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
@@ -326,7 +355,6 @@ def go_away(callback_query: types.CallbackQuery):
 	bot.send_message(callback_query.from_user.id, 'Приятного просмотра!')
 	user_id = callback_query.from_user.id
 	user_name = callback_query.from_user.username
-	print(f'Запиши, что пользователь {user_name} с id {user_id} посмотрел фильм "{movie_name}" с id {movie_id}')
 	add_information(
 		user_id = user_id,
 		user_name = user_name,
@@ -340,10 +368,10 @@ def go_away(callback_query: types.CallbackQuery):
 		for item in get_similars['items']:
 			movie_id = item['filmId']
 			movie_name = item['nameRu']
-			l = get_information(user_id=user_id)
+			l = get_movies_ids(user_id=user_id)
 			count = 0
 			for i in l:
-				if movie_id !=  i[0]: # проверяем, нет ли данного фильма в рекомендованных пользователю фильмов
+				if movie_id != i[0]: # проверяем, нет ли данного фильма в рекомендованных пользователю фильмов
 					count += 1
 			if count == len(l):
 				add_similar(
@@ -353,6 +381,22 @@ def go_away(callback_query: types.CallbackQuery):
 					movie_name=movie_name
 				)
 
+@bot.callback_query_handler(func=lambda c: c.data == 'what')
+def process_callback_button1(callback_query: types.CallbackQuery):
+	bot.answer_callback_query(callback_query.id)
+	global movie_id
+	global movie_name
+	text, poster, trailer, movie_id, movie_name = get_recommendation(callback_query.from_user.id)
+	bot.send_message(callback_query.from_user.id, text)
+	bot.send_photo(callback_query.from_user.id, poster)
+	if trailer != False:
+		bot.send_message(callback_query.from_user.id, f'Трейлер фильма:\n{trailer}')
+	markup_data = types.InlineKeyboardMarkup(row_width=1)
+	again = types.InlineKeyboardButton('Дальше', callback_data='what')
+	all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
+	markup_data.add(again, all_)
+	bot.send_message(callback_query.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)				
+				
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
 	if c.message:
