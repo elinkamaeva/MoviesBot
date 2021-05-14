@@ -47,7 +47,7 @@ def find_my_genre(user_genre):
 	list_of_numbers.append(number)
 
 	new_page = (number // 20) + 1
-	new_link = new_link.replace(new_link[-1], str(new_page)) # создание ссылки с нужной страницей фильма
+	new_link = f'{new_link[:-1]}{(new_page)} # создание ссылки с нужной страницей фильма
 		
 	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
@@ -104,8 +104,8 @@ def find_by_rate(user_rate):
 
 	list_of_numbers.append(number)
 
-	new_page = int(new_link[-1]) + (number // 20) + 1
-	new_link = new_link.replace(new_link[-1], str(new_page))
+	new_page = (number // 20) + 1
+	new_link = f'{new_link[:-1]}{(new_page)}
 
 	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
 	search_rate = search_rate.json()
@@ -170,7 +170,7 @@ def find_by_year(user_year):
 	list_of_numbers.append(number)
 
 	new_page = (number // 20) + 1
-	new_link = new_link.replace(new_link[-1], str(new_page))
+	new_link = f'{new_link[:-1]}{(new_page)}
 		
 	search_year = requests.get(new_link, headers=HEADERS_AUTH)
 	search_year = search_year.json()
@@ -233,7 +233,7 @@ def find_by_country(user_country):
 	list_of_numbers.append(number)
     
 	new_page = (number // 20) + 1
-	new_link = new_link.replace(new_link[-1], str(new_page))
+	new_link = f'{new_link[:-1]}{(new_page)}
     
 	search_country = requests.get(new_link, headers=HEADERS_AUTH)
 	search_country = search_country.json()
