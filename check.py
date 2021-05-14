@@ -268,7 +268,11 @@ def get_recommendation(user_id):
     else:
 	if len(list_of_numbers) == number_of_movies: # проверка оставшихся фильмов
 		return False, False, False, False, False
-        number = randint(0, number_of_movies - 1)  # выбор случайного фильма
+	number = randint(0, number_of_movies - 1)  # выбор случайного фильма
+        if number in list_of_numbers:  # проверка, не был ли этот фильм уже показан
+            while number in list_of_numbers:
+                number = randint(1, number_of_movies)
+        list_of_numbers.append(number)
         movie_id = lst[number][0]
         get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
                                    headers=HEADERS_AUTH)
