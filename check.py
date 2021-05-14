@@ -142,7 +142,7 @@ def find_by_year(user_year):
 		year_to += user_year[i]
     
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
-	new_link = link.replace('yearFrom=1888', f'yearFrom={year_from}')
+	new_link = link.replace('yearFrom=1900', f'yearFrom={year_from}')
 	new_link = new_link.replace('yearTo=2020', f'yearTo={year_to}')
     
 	search_year = requests.get(new_link, headers=HEADERS_AUTH)
@@ -496,7 +496,7 @@ def send_text(message):
 	if message.text.lower() == 'привет':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Привет, {name}')
-		markup = types.InlineKeyboardMarkup()
+		markup = types.InlineKeyboardMarkup(row_width=1)
 		item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
 		item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
 		item_year = types.InlineKeyboardButton('По году создания', callback_data='year')
