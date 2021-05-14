@@ -402,23 +402,27 @@ def choose_criterion(where, who):
 				
 @bot.callback_query_handler(func=lambda c: c.data == 'what')
 def process_callback_button1(callback_query: types.CallbackQuery):
-    bot.answer_callback_query(callback_query.id)
-    global movie_id
-    global movie_name
-    text, poster, trailer, movie_id, movie_name = get_recommendation(callback_query.from_user.id)
-    bot.send_message(callback_query.from_user.id, text)
-    if poster != False:
-        bot.send_photo(callback_query.from_user.id, poster)
-    if trailer != False:
-        bot.send_message(callback_query.from_user.id, f'Трейлер фильма:\n{trailer}')
-    if movie_id != False:
-        markup_data = types.InlineKeyboardMarkup(row_width=1)
-        again = types.InlineKeyboardButton('Дальше', callback_data='what')
-        all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
-        markup_data.add(again, all_)
-        bot.send_message(callback_query.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
-    else:
-	choose_criterion(callback_query.from_user.id, callback_query.from_user.id)			
+	bot.answer_callback_query(callback_query.id)
+	global movie_id
+	global movie_name
+	text, poster, trailer, movie_id, movie_name = get_recommendation(callback_query.from_user.id)
+	if text != False:
+		bot.send_message(callback_query.from_user.id, text)
+	else:
+		bot.send_message(callback_query.from_user.id, 'Фильмы закончились :(\nПопробуй выбрать фильмы по другим критериям')
+		choose_criterion(callback_query.from_user.id, callback_query.from_user.id)
+	if poster != False:
+		bot.send_photo(callback_query.from_user.id, poster)
+	if trailer != False:
+		bot.send_message(callback_query.from_user.id, f'Трейлер фильма:\n{trailer}')
+	if movie_id != False:
+		markup_data = types.InlineKeyboardMarkup(row_width=1)
+		again = types.InlineKeyboardButton('Дальше', callback_data='what')
+		all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
+		markup_data.add(again, all_)
+		bot.send_message(callback_query.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
+	else:
+		choose_criterion(callback_query.from_user.id, callback_query.from_user.id)			
 				
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
