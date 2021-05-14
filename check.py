@@ -264,20 +264,26 @@ def find_by_country(user_country):
 	else: 
 		return text, film['posterUrl'], False, film_id, film_name
 	
+# поиск фильмов по истории просмотров
 def get_recommendation(user_id):
     lst = get_movies_ids(user_id=user_id)
     number_of_movies = len(lst)
+
     if number_of_movies == 0:
         text = 'К сожалению, для Вас эта функция еще не доступна.\nПодберите хотя бы один фильм по любому другому критерию поиска'
         return text, False, False, False, False
+
     else:
-	if len(list_of_numbers) == number_of_movies: # проверка оставшихся фильмов
+	if len(list_of_numbers) == number_of_movies:
 		return False, False, False, False, False
-	number = randint(0, number_of_movies - 1)  # выбор случайного фильма
-        if number in list_of_numbers:  # проверка, не был ли этот фильм уже показан
+	
+	number = randint(0, number_of_movies - 1)
+        if number in list_of_numbers:
             while number in list_of_numbers:
                 number = randint(1, number_of_movies)
+		
         list_of_numbers.append(number)
+	
         movie_id = lst[number][0]
         get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
                                    headers=HEADERS_AUTH)
@@ -285,7 +291,8 @@ def get_recommendation(user_id):
         message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'],
                'Страны': movie_information['countries'], 'Жанры': movie_information['genres']}
         text = ''
-        for m in message.items():
+        
+	for m in message.items():
             if type(m[1]) == list:
                 list_values = []
                 for c in m[1]:
@@ -294,6 +301,7 @@ def get_recommendation(user_id):
                 text += f'{m[0]}: {values}' + '\n'
             else:
                 text += f'{m[0]}: {m[1]}' + '\n'
+		
         link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}/videos'
         get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
         get_trailer = get_trailer.json()
@@ -310,6 +318,7 @@ ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_F
 YEARS = ['1888-1899', '1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-1999', '2000-2009', '2010-2020']
 COUNTRIES = ['США', 'Россия', 'СССР', 'Германия', 'Великобритания', 'Франция', 'Италия', 'Япония', 'Бразилия', 'Австралия']
 
+# далее функции для работы самого бота
 TOKEN = 'TOKEN'
 bot = telebot.TeleBot(TOKEN)
 
@@ -384,7 +393,7 @@ def go_away(callback_query: types.CallbackQuery):
 			l = get_movies_ids(user_id=user_id)
 			count = 0
 			for i in l:
-				if movie_id != i[0]: # проверяем, нет ли данного фильма в рекомендованных пользователю фильмов
+				if movie_id != i[0]: # проверка на то, нет ли данного фильма в рекомендованных пользователю фильмах
 					count += 1
 			if count == len(l):
 				add_similar(
@@ -525,7 +534,7 @@ USERS = set()
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-	bot.reply_to(message, '''Чтобы начать, напиши "привет".
+	bot.reply_to(message, '''Чтобы начать, напишите "привет".
 Чтобы узнать, что делает наш бот, нажмите /help''')
 
 @bot.message_handler(commands=['help'])
