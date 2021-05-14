@@ -143,7 +143,7 @@ def find_by_year(user_year):
 	for i in range(5, 9):
 		year_to += user_year[i]
     
-	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
+	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1900&yearTo=2020&page=1'
 	new_link = link.replace('yearFrom=1900', f'yearFrom={year_from}')
 	new_link = new_link.replace('yearTo=2020', f'yearTo={year_to}')
     
@@ -305,7 +305,7 @@ def get_recommendation(user_id):
 GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
 ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
-YEARS = ['1888-1899', '1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-1999', '2000-2009', '2010-2020']
+YEARS = ['1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-1999', '2000-2009', '2010-2020']
 COUNTRIES = ['США', 'Россия', 'СССР', 'Германия', 'Великобритания', 'Франция', 'Италия', 'Япония', 'Бразилия', 'Австралия']
 
 TOKEN = 'TOKEN'
