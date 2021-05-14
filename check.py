@@ -24,13 +24,12 @@ def find_my_genre(user_genre):
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
 	# создание ссылки
 	new_link = link.replace('genre', f'genre={genre_id}')
-	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
-	search_genre = search_genre.json()
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json
 	page_count = search_genre['pagesCount'] # количество доступных страниц фильмов, по 20 фильмов на странице
 	new_link = new_link.replace('page=1', f'page={page_count}')
 
-	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
-	last_page_films = len(search_rate['films'])
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json()
+	last_page_films = len(search_genre['films'])
 	number_of_films = (page_count - 1) * 20 + last_page_films # количество подходящих фильмов
 	
 	# проверка оставшихся фильмов
@@ -49,8 +48,7 @@ def find_my_genre(user_genre):
 	new_page = (number // 20) + 1
 	new_link = f'{new_link[:-1]}{(new_page)}' # создание ссылки с нужной страницей фильма
 		
-	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
-	search_genre = search_genre.json()
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json
 	films = search_genre['films']
 	film = films[number % 20] # нужный фильм
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
@@ -83,8 +81,7 @@ def find_my_genre(user_genre):
 def find_by_rate(user_rate):
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=&page=1'
 	new_link = link.replace('type=', f'type={user_rate}')
-	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
-	search_rate = search_rate.json()
+	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
 	page_count = search_rate['pagesCount']
 	
 	# создание массива с номерами фильмов, чтобы каждый раз выводить фильмы в различном порядке
@@ -107,8 +104,7 @@ def find_by_rate(user_rate):
 	new_page = (number // 20) + 1
 	new_link = f'{new_link[:-1]}{(new_page)}'
 
-	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
-	search_rate = search_rate.json()
+	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
 	films = search_rate['films']
 	film = films[number % 20]
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
@@ -149,8 +145,7 @@ def find_by_year(user_year):
 	new_link = link.replace('yearFrom=1900', f'yearFrom={year_from}')
 	new_link = new_link.replace('yearTo=2020', f'yearTo={year_to}')
     
-	search_year = requests.get(new_link, headers=HEADERS_AUTH)
-	search_year = search_year.json()
+	search_year = requests.get(new_link, headers=HEADERS_AUTH).json()
 	page_count = search_year['pagesCount']    
 	new_link = new_link.replace('page=1', f'page={page_count}')
     
@@ -172,8 +167,7 @@ def find_by_year(user_year):
 	new_page = (number // 20) + 1
 	new_link = f'{new_link[:-1]}{(new_page)}'
 		
-	search_year = requests.get(new_link, headers=HEADERS_AUTH)
-	search_year = search_year.json()
+	search_year = requests.get(new_link, headers=HEADERS_AUTH).json()
 	films = search_year['films']
 	film = films[number % 20]
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
@@ -212,8 +206,7 @@ def find_by_country(user_country):
             
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?country&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
 	new_link = link.replace('country', f'country={country_id}')
-	search_country = requests.get(new_link, headers=HEADERS_AUTH)
-	search_country = search_country.json()
+	search_country = requests.get(new_link, headers=HEADERS_AUTH).json()
 	page_count = search_country['pagesCount']
 	new_link = new_link.replace('page=1', f'page={page_count}')
     
@@ -235,8 +228,7 @@ def find_by_country(user_country):
 	new_page = (number // 20) + 1
 	new_link = f'{new_link[:-1]}{(new_page)}'
     
-	search_country = requests.get(new_link, headers=HEADERS_AUTH)
-	search_country = search_country.json()
+	search_country = requests.get(new_link, headers=HEADERS_AUTH).json()
 	films = search_country['films']
 	film = films[number % 20]
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
