@@ -68,10 +68,6 @@ def find_my_genre(user_genre):
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
-	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{film_id}/similars'
-	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
-	get_similars = get_similars.json()
-	print(get_similars)
 
 	if len(get_trailer['trailers']) != 0:
 		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
@@ -128,10 +124,6 @@ def find_by_rate(user_rate):
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
-	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{film_id}/similars'
-	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
-	get_similars = get_similars.json()
-	print(get_similars)
 
 	if len(get_trailer['trailers']) != 0:
 		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
@@ -197,10 +189,6 @@ def find_by_year(user_year):
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
-	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{film_id}/similars'
-	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
-	get_similars = get_similars.json()
-	print(get_similars)
     
 	if len(get_trailer['trailers']) != 0:
 		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
@@ -265,10 +253,6 @@ def find_by_country(user_country):
 	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{film_id}/videos'
 	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
 	get_trailer = get_trailer.json()
-	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{film_id}/similars'
-	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
-	get_similars = get_similars.json()
-	print(get_similars)
     
 	if len(get_trailer['trailers']) != 0:
 		return text, film['posterUrl'], get_trailer['trailers'][0]['url'], film_id, film_name
@@ -345,6 +329,10 @@ def go_away(callback_query: types.CallbackQuery):
 		movie_id = movie_id,
 		movie_name = movie_name
 	)
+	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{movie_id}/similars'
+	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
+	get_similars = get_similars.json()
+	print(get_similars)
 
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
