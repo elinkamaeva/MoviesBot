@@ -1,6 +1,5 @@
 import telebot
 from telebot import types
-#from secret import TOKEN
 import requests
 from random import randint
 from dbhelper import init_db
@@ -13,6 +12,7 @@ HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
 
 list_of_numbers = []
 
+# поиск фильмов по жанру
 def find_my_genre(user_genre):
 	genre_ids = requests.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/filters', headers=HEADERS_AUTH)
 	genre_ids_json = genre_ids.json()['genres']
@@ -22,23 +22,25 @@ def find_my_genre(user_genre):
 			genre_id = genre['id']
 
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
-	new_link = link.replace('genre', f'genre={genre_id}') #создаём ссылку
+	# создание ссылки
+	new_link = link.replace('genre', f'genre={genre_id}')
 	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
-	page_count = search_genre['pagesCount'] #количество доступных страниц фильмов, по 20 фильмов на странице
-	
+	page_count = search_genre['pagesCount'] # количество доступных страниц фильмов, по 20 фильмов на странице
 	new_link = new_link.replace('page=1', f'page={page_count}')
 
 	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
 	last_page_films = len(search_rate['films'])
-	number_of_films = (page_count-1) * 20 + last_page_films # количество фильмов
+	number_of_films = (page_count - 1) * 20 + last_page_films # количество подходящих фильмов
 	
-	if len(list_of_numbers) == number_of_films: # проверка оставшихся фильмов
+	# проверка оставшихся фильмов
+	if len(list_of_numbers) == number_of_films:
 		return False, False, False
 
-	number = randint(0, number_of_films-1) # выбор случайного фильма
+	number = randint(0, number_of_films - 1) # выбор случайного фильма
 
-	if number in list_of_numbers: # проверка, не был ли этот фильм уже показан
+	# проверка на то, не был ли этот фильм уже показан
+	if number in list_of_numbers:
 		while number in list_of_numbers:
 			number = randint(1, number_of_films)
 
@@ -50,11 +52,12 @@ def find_my_genre(user_genre):
 	search_genre = requests.get(new_link, headers=HEADERS_AUTH)
 	search_genre = search_genre.json()
 	films = search_genre['films']
-	film = films[number % 20] #находим фильм
+	film = films[number % 20] # нужный фильм
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
 	text = ''
 	
-	for m in message_film.items(): #генерируем сообщение бота
+	# формирование сообщение бота
+	for m in message_film.items():
 		if type(m[1]) == list:
 			list_values = []
 			for c in m[1]:
