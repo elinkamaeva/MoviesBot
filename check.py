@@ -79,12 +79,13 @@ def find_my_genre(user_genre):
 	else: 
 		return text, film['posterUrl'], False, film_id, film_name
 
+# поиск фильмов по рейтингу
 def find_by_rate(user_rate):
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=&page=1'
 	new_link = link.replace('type=', f'type={user_rate}')
 	search_rate = requests.get(new_link, headers=HEADERS_AUTH)
 	search_rate = search_rate.json()
-	page_count = search_rate['pagesCount'] # количество доступных страниц фильмов, до 20 фильмов на странице
+	page_count = search_rate['pagesCount']
 	
 	# создание массива с номерами фильмов, чтобы каждый раз выводить фильмы в различном порядке
 	if page_count == 13:
@@ -95,7 +96,7 @@ def find_by_rate(user_rate):
 	if len(list_of_numbers) == number_of_films:
 		return False, False, False
 
-	number = randint(0, number_of_films-1)
+	number = randint(0, number_of_films - 1)
 
 	if number in list_of_numbers:
 		while number in list_of_numbers:
@@ -135,6 +136,7 @@ def find_by_rate(user_rate):
 	else: 
 		return text, film['posterUrl'], False, film_id, film_name
     
+# поиск фильмов по году создания
 def find_by_year(user_year):
 	year_from = ''
 	for i in range(4):
@@ -143,7 +145,7 @@ def find_by_year(user_year):
 	for i in range(5, 9):
 		year_to += user_year[i]
     
-	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1900&yearTo=2020&page=1'
+	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
 	new_link = link.replace('yearFrom=1900', f'yearFrom={year_from}')
 	new_link = new_link.replace('yearTo=2020', f'yearTo={year_to}')
     
@@ -154,12 +156,12 @@ def find_by_year(user_year):
     
 	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
 	last_page_films = len(search_rate['films'])
-	number_of_films = (page_count-1) * 20 + last_page_films
+	number_of_films = (page_count - 1) * 20 + last_page_films
     
 	if len(list_of_numbers) == number_of_films:
 		return False, False, False
     
-	number = randint(0, number_of_films-1)
+	number = randint(0, number_of_films - 1)
     
 	if number in list_of_numbers:
 		while number in list_of_numbers:
@@ -199,6 +201,7 @@ def find_by_year(user_year):
 	else: 
 		return text, film['posterUrl'], False, film_id, film_name
     
+# поиск фильмов по стране создания
 def find_by_country(user_country):
 	country_ids = requests.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/filters', headers=HEADERS_AUTH)
 	country_ids_json = country_ids.json()['countries']
@@ -212,17 +215,16 @@ def find_by_country(user_country):
 	search_country = requests.get(new_link, headers=HEADERS_AUTH)
 	search_country = search_country.json()
 	page_count = search_country['pagesCount']
-    
 	new_link = new_link.replace('page=1', f'page={page_count}')
     
 	search_rate = requests.get(new_link, headers=HEADERS_AUTH).json()
 	last_page_films = len(search_rate['films'])
-	number_of_films = (page_count-1) * 20 + last_page_films
+	number_of_films = (page_count - 1) * 20 + last_page_films
     
 	if len(list_of_numbers) == number_of_films: 
 		return False, False, False
     
-	number = randint(0, number_of_films-1)
+	number = randint(0, number_of_films - 1)
     
 	if number in list_of_numbers: 
 		while number in list_of_numbers:
@@ -305,7 +307,7 @@ def get_recommendation(user_id):
 GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
 ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_FILMS', 'ТОП-100 популярных фильмов': 'TOP_100_POPULAR_FILMS'}
-YEARS = ['1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-1999', '2000-2009', '2010-2020']
+YEARS = ['1888-1899', '1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-1999', '2000-2009', '2010-2020']
 COUNTRIES = ['США', 'Россия', 'СССР', 'Германия', 'Великобритания', 'Франция', 'Италия', 'Япония', 'Бразилия', 'Австралия']
 
 TOKEN = 'TOKEN'
