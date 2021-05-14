@@ -412,8 +412,8 @@ def process_callback_button1(callback_query: types.CallbackQuery):
         i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу',
                                                  callback_data='what')
         markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
-        bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
-        USERS.add(message.from_user.id)			
+        bot.send_message(callback_query.from_user.id, 'Выберите критерий поиска:', reply_markup=markup)
+        USERS.add(callback_query.from_user.id)			
 				
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
