@@ -5,6 +5,7 @@ import requests
 from random import randint
 from dbhelper import init_db
 from dbhelper import add_information
+from dbhelper import add_similar
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
@@ -318,6 +319,8 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 def go_away(callback_query: types.CallbackQuery):
 	bot.answer_callback_query(callback_query.id)
 	global list_of_numbers
+	global movie_id
+	global movie_name
 	list_of_numbers = []
 	bot.send_message(callback_query.from_user.id, 'Приятного просмотра!')
 	user_id = callback_query.from_user.id
@@ -332,7 +335,17 @@ def go_away(callback_query: types.CallbackQuery):
 	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{movie_id}/similars'
 	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
 	get_similars = get_similars.json()
-	print(get_similars)
+	if len(get_similars['items']) != 0:
+		for item in get_similars['items']:
+			movie_id = item['filmId']
+			movie_name = item['nameRu']
+			print(movie_id, movie_name)
+			add_similar(
+				user_id=user_id,
+				user_name=user_name,
+				movie_id=movie_id,
+				movie_name=movie_name
+			)
 
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
