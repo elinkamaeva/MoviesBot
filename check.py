@@ -6,6 +6,7 @@ from random import randint
 from dbhelper import init_db
 from dbhelper import add_information
 from dbhelper import add_similar
+from dbhelper import get_information
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
@@ -339,13 +340,18 @@ def go_away(callback_query: types.CallbackQuery):
 		for item in get_similars['items']:
 			movie_id = item['filmId']
 			movie_name = item['nameRu']
-			print(movie_id, movie_name)
-			add_similar(
-				user_id=user_id,
-				user_name=user_name,
-				movie_id=movie_id,
-				movie_name=movie_name
-			)
+			l = get_information(user_id=user_id)
+			count = 0
+			for i in l:
+				if movie_id !=  i[0]: # проверяем, нет ли данного фильма в рекомендованных пользователю фильмов
+					count += 1
+			if count == len(l):
+				add_similar(
+					user_id=user_id,
+					user_name=user_name,
+					movie_id=movie_id,
+					movie_name=movie_name
+				)
 
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
