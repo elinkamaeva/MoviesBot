@@ -272,6 +272,9 @@ bot = telebot.TeleBot(TOKEN)
 
 init_db()
 
+movie_id = 0
+movie_name = ''
+
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
 def process_callback_button1(callback_query: types.CallbackQuery):
 	bot.answer_callback_query(callback_query.id)
@@ -291,9 +294,6 @@ def process_callback_button1(callback_query: types.CallbackQuery):
 		markup_rates.add(types.InlineKeyboardButton(r, callback_data=f'rates{i}'))
 		i += 1
 	bot.send_message(callback_query.from_user.id, 'Выберите интересующий вас рейтинг', reply_markup=markup_rates)
-	
-movie_id = 0
-movie_name = ''
 
 @bot.callback_query_handler(func=lambda c: c.data == 'year')
 def process_callback_button1(callback_query: types.CallbackQuery):
