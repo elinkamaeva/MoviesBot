@@ -49,3 +49,9 @@ def add_similar(conn, user_id: int, user_name: str, movie_id: int, movie_name: s
     c = conn.cursor()
     c.execute('INSERT INTO similars (user_id, user_name, movie_id, movie_name) VALUES (?, ?, ?, ?)', (user_id, user_name, movie_id, movie_name))
     conn.commit()
+    
+@ensure_connection
+def get_information(conn, user_id: int):
+    c = conn.cursor()
+    c.execute('SELECT movie_id FROM similars WHERE user_id = ?', (user_id, ))
+    return c.fetchall()
