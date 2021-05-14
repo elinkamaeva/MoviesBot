@@ -266,6 +266,8 @@ def get_recommendation(user_id):
         text = 'К сожалению, для Вас эта функция еще не доступна.\nПодберите хотя бы один фильм по любому другому критерию поиска'
         return text, False, False, False, False
     else:
+	if len(list_of_numbers) == number_of_movies: # проверка оставшихся фильмов
+		return False, False, False, False, False
         number = randint(0, number_of_movies - 1)  # выбор случайного фильма
         movie_id = lst[number][0]
         get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
