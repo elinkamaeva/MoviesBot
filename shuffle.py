@@ -267,8 +267,7 @@ def send_text(message):
 		bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
 		USERS.add(message.from_user.id)
 		
-	elif message.text.lower() == 'пока':
-		name = message.from_user.first_name
-		bot.send_message(message.chat.id, f'Прощай, создатель {name}')
+	else:
+		bot.send_message(message.chat.id, 'Простите, я Вас не понимаю. Введите "привет", чтобы начать.')
 
 bot.polling()
