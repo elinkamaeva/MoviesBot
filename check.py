@@ -3,11 +3,11 @@ from telebot import types
 #from secret import TOKEN
 import requests
 from random import randint
-#from dbhelper import init_db
-#from dbhelper import add_information
+from dbhelper import init_db
+from dbhelper import add_information
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-HEADERS_AUTH = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
+HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
 
 list_of_numbers = []
 
@@ -282,10 +282,10 @@ ENG_RATES = {'ТОП-250 фильмов за всё время': 'TOP_250_BEST_F
 YEARS = ['1888-1899', '1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-1999', '2000-2009', '2010-2020']
 COUNTRIES = ['США', 'Россия', 'СССР', 'Германия', 'Великобритания', 'Франция', 'Италия', 'Япония', 'Бразилия', 'Австралия']
 
-TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
+TOKEN = 'TOKEN'
 bot = telebot.TeleBot(TOKEN)
 
-#init_db()
+init_db()
 
 @bot.callback_query_handler(func=lambda c: c.data == 'genre')
 def process_callback_button1(callback_query: types.CallbackQuery):
@@ -339,12 +339,12 @@ def go_away(callback_query: types.CallbackQuery):
 	user_id = callback_query.from_user.id
 	user_name = callback_query.from_user.username
 	print(f'Запиши, что пользователь {user_name} с id {user_id} посмотрел фильм "{movie_name}" с id {movie_id}')
-	#add_information(
-		#user_id = user_id,
-		#user_name = user_name,
-		#movie_id = movie_id,
-		#movie_name = movie_name
-	#)
+	add_information(
+		user_id = user_id,
+		user_name = user_name,
+		movie_id = movie_id,
+		movie_name = movie_name
+	)
 
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
