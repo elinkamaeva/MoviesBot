@@ -274,7 +274,6 @@ def get_recommendation(user_id):
         get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
                                    headers=HEADERS_AUTH)
         movie_information = get_information.json()['data']
-        print(movie_information)
         message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'],
                'Страны': movie_information['countries'], 'Жанры': movie_information['genres']}
         text = ''
