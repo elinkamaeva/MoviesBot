@@ -55,3 +55,9 @@ def get_movies_ids(conn, user_id: int):
     c = conn.cursor()
     c.execute('SELECT movie_id FROM similars WHERE user_id = ?', (user_id, ))
     return c.fetchall()
+
+@ensure_connection
+def delete_movie(conn, user_id: int, movie_id: int):
+    c = conn.cursor()
+    c.execute('DELETE FROM similars WHERE user_id = ? AND movie_id = ?', (user_id, movie_id))
+    conn.commit()
