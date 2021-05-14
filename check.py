@@ -383,6 +383,17 @@ def go_away(callback_query: types.CallbackQuery):
 					movie_name=movie_name
 				)
 
+def choose_criterion(where, who):
+	markup = types.InlineKeyboardMarkup(row_width=1)
+	item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
+	item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
+	item_year = types.InlineKeyboardButton('По году создания', callback_data='year')
+	item_country = types.InlineKeyboardButton('По стране создания', callback_data='country')
+	i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу', callback_data='what')
+	markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
+	bot.send_message(where, 'Выберите критерий поиска:', reply_markup=markup)
+	USERS.add(who)				
+				
 @bot.callback_query_handler(func=lambda c: c.data == 'what')
 def process_callback_button1(callback_query: types.CallbackQuery):
     bot.answer_callback_query(callback_query.id)
@@ -401,16 +412,7 @@ def process_callback_button1(callback_query: types.CallbackQuery):
         markup_data.add(again, all_)
         bot.send_message(callback_query.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
     else:
-        markup = types.InlineKeyboardMarkup(row_width=1)
-        item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
-        item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
-        item_year = types.InlineKeyboardButton('По году создания', callback_data='year')
-        item_country = types.InlineKeyboardButton('По стране создания', callback_data='country')
-        i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу',
-                                                 callback_data='what')
-        markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
-        bot.send_message(callback_query.from_user.id, 'Выберите критерий поиска:', reply_markup=markup)
-        USERS.add(callback_query.from_user.id)			
+	choose_criterion(callback_query.from_user.id, callback_query.from_user.id)			
 				
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
@@ -433,7 +435,8 @@ def callback_inline(c):
 			films, poster, trailer, movie_id, movie_name = find_my_genre(genre)
 
 			if films == False:
-				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
+				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nПопробуй выбрать фильмы по другим критериям')
+				choose_criterion(c.from_user.id, c.from_user.id)
 
 			else:
 				bot.send_message(c.from_user.id, films)
@@ -453,7 +456,8 @@ def callback_inline(c):
 			films, poster, trailer, movie_id, movie_name = find_by_rate(rate_to_find)
 
 			if films == False:
-				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
+				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nПопробуй выбрать фильмы по другим критериям')
+				choose_criterion(c.from_user.id, c.from_user.id)
 
 			else:
 				bot.send_message(c.from_user.id, films)
@@ -472,7 +476,8 @@ def callback_inline(c):
 			films, poster, trailer, movie_id, movie_name = find_by_year(year)
     
 			if films == False:
-				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
+				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nПопробуй выбрать фильмы по другим критериям')
+				choose_criterion(c.from_user.id, c.from_user.id)
         
 			else:
 				bot.send_message(c.from_user.id, films)
@@ -491,7 +496,8 @@ def callback_inline(c):
 			films, poster, trailer, movie_id, movie_name = find_by_country(country)
     
 			if films == False:
-				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nНапиши снова "привет", чтобы выбрать фильмы по другим критериям')
+				bot.send_message(c.from_user.id, 'Фильмы закончились :(\nПопробуй выбрать фильмы по другим критериям')
+				choose_criterion(c.from_user.id, c.from_user.id)
         
 			else:
 				bot.send_message(c.from_user.id, films)
@@ -514,22 +520,13 @@ def send_welcome(message):
 Каждый выбранный фильм будет сохраняться в список Ваших просмотренных фильмов, на основе которых будет формироваться список предложений.
 Чтобы посмотреть предложенные фильмы нажмите кнопку "Я не знаю, что хочу".
 Для начала напиши боту "привет"''')
-
+	
 @bot.message_handler(content_types=['text'])
 def send_text(message):
 	if message.text.lower() == 'привет':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Привет, {name}')
-		markup = types.InlineKeyboardMarkup(row_width=1)
-		item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
-		item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
-		item_year = types.InlineKeyboardButton('По году создания', callback_data='year')
-		item_country = types.InlineKeyboardButton('По стране создания', callback_data='country')
-		i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу', callback_data='what')
-		markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
-		bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
-		USERS.add(message.from_user.id)
-		
+		choose_criterion(message.chat.id, message.from_user.id)	
 	elif message.text.lower() == 'пока':
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Прощай, создатель {name}')
