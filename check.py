@@ -8,7 +8,7 @@ from dbhelper import add_similar
 from dbhelper import get_movies_ids
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
+HEADERS_AUTH = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
 
 list_of_numbers = []
 
@@ -24,7 +24,7 @@ def find_my_genre(user_genre):
 	link = 'https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-filters?genre&order=RATING&type=ALL&ratingFrom=0&ratingTo=10&yearFrom=1888&yearTo=2020&page=1'
 	# создание ссылки
 	new_link = link.replace('genre', f'genre={genre_id}')
-	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json()
 	page_count = search_genre['pagesCount'] # количество доступных страниц фильмов, по 20 фильмов на странице
 	new_link = new_link.replace('page=1', f'page={page_count}')
 
@@ -48,7 +48,7 @@ def find_my_genre(user_genre):
 	new_page = (number // 20) + 1
 	new_link = f'{new_link[:-1]}{(new_page)}' # создание ссылки с нужной страницей фильма
 		
-	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json
+	search_genre = requests.get(new_link, headers=HEADERS_AUTH).json()
 	films = search_genre['films']
 	film = films[number % 20] # нужный фильм
 	message_film = {'Название': film['nameRu'], 'Год создания': film['year'], 'Рейтинг': film['rating'], 'Страны': film['countries'], 'Жанры': film['genres']}
@@ -258,51 +258,52 @@ def find_by_country(user_country):
 	
 # поиск фильмов по истории просмотров
 def get_recommendation(user_id):
-    lst = get_movies_ids(user_id=user_id)
-    number_of_movies = len(lst)
+	lst = get_movies_ids(user_id=user_id)
+	number_of_movies = len(lst)
 
-    if number_of_movies == 0:
-        text = 'К сожалению, для Вас эта функция еще не доступна.\nПодберите хотя бы один фильм по любому другому критерию поиска'
-        return text, False, False, False, False
+	if number_of_movies == 0:
+		text = 'К сожалению, для Вас эта функция еще не доступна.\nПодберите хотя бы один фильм по любому другому критерию поиска'
+		return text, False, False, False, False
 
-    else:
-	if len(list_of_numbers) == number_of_movies:
+	elif len(list_of_numbers) == number_of_movies:
 		return False, False, False, False, False
 	
 	number = randint(0, number_of_movies - 1)
-        if number in list_of_numbers:
-            while number in list_of_numbers:
-                number = randint(1, number_of_movies)
+
+	if number in list_of_numbers:
+		while number in list_of_numbers:
+			number = randint(1, number_of_movies)
 		
-        list_of_numbers.append(number)
+	list_of_numbers.append(number)
 	
-        movie_id = lst[number][0]
-        get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
+	movie_id = lst[number][0]
+	get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
                                    headers=HEADERS_AUTH)
-        movie_information = get_information.json()['data']
-        message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'],
+	movie_information = get_information.json()['data']
+	message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'],
                'Страны': movie_information['countries'], 'Жанры': movie_information['genres']}
-        text = ''
+
+	text = ''
         
 	for m in message.items():
-            if type(m[1]) == list:
-                list_values = []
-                for c in m[1]:
-                    list_values.append(list(c.values())[0])
-                values = ', '.join(list_values)
-                text += f'{m[0]}: {values}' + '\n'
-            else:
-                text += f'{m[0]}: {m[1]}' + '\n'
+		if type(m[1]) == list:
+			list_values = []
+			for c in m[1]:
+				list_values.append(list(c.values())[0])
+			values = ', '.join(list_values)
+			text += f'{m[0]}: {values}' + '\n'
+		else:
+			text += f'{m[0]}: {m[1]}' + '\n'
 		
-        link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}/videos'
-        get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
-        get_trailer = get_trailer.json()
+	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}/videos'
+	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
+	get_trailer = get_trailer.json()
 
-        if len(get_trailer['trailers']) != 0:
-            return text, movie_information['posterUrl'], get_trailer['trailers'][0]['url'], movie_id, movie_information['nameRu']
+	if len(get_trailer['trailers']) != 0:
+		return text, movie_information['posterUrl'], get_trailer['trailers'][0]['url'], movie_id, movie_information['nameRu']
 
-        else:
-            return text, movie_information['posterUrl'], False, movie_id, movie_information['nameRu']
+	else:
+		return text, movie_information['posterUrl'], False, movie_id, movie_information['nameRu']
 
 GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
@@ -311,7 +312,7 @@ YEARS = ['1888-1899', '1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-
 COUNTRIES = ['США', 'Россия', 'СССР', 'Германия', 'Великобритания', 'Франция', 'Италия', 'Япония', 'Бразилия', 'Австралия']
 
 # далее функции для работы самого бота
-TOKEN = 'TOKEN'
+TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
 bot = telebot.TeleBot(TOKEN)
 
 init_db()
