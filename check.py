@@ -263,33 +263,39 @@ def find_by_country(user_country):
 		return text, film['posterUrl'], False, film_id, film_name
 	
 def get_recommendation(user_id):
-	lst = get_movies_ids(user_id=user_id)
-	number_of_movies = len(lst)
-	number = randint(0, number_of_movies - 1)  # выбор случайного фильма
-	movie_id = lst[number][0]
-	get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}', headers=HEADERS_AUTH)
-	movie_information = get_information.json()['data']
-	print(movie_information)
-	message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'], 'Страны': movie_information['countries'], 'Жанры': movie_information['genres']}
-	text = ''
-	for m in message.items():
-		if type(m[1]) == list:
-			list_values = []
-			for c in m[1]:
-				list_values.append(list(c.values())[0])
-			values = ', '.join(list_values)
-			text += f'{m[0]}: {values}' + '\n'
-		else:
-			text += f'{m[0]}: {m[1]}' + '\n'
-	link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}/videos'
-	get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
-	get_trailer = get_trailer.json()
+    lst = get_movies_ids(user_id=user_id)
+    number_of_movies = len(lst)
+    if number_of_movies == 0:
+        text = 'К сожалению, для Вас эта функция еще не доступна.\nПодберите хотя бы один фильм по любому другому критерию поиска'
+        return text, False, False, False, False
+    else:
+        number = randint(0, number_of_movies - 1)  # выбор случайного фильма
+        movie_id = lst[number][0]
+        get_information = requests.get(f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}',
+                                   headers=HEADERS_AUTH)
+        movie_information = get_information.json()['data']
+        print(movie_information)
+        message = {'Название': movie_information['nameRu'], 'Год создания': movie_information['year'],
+               'Страны': movie_information['countries'], 'Жанры': movie_information['genres']}
+        text = ''
+        for m in message.items():
+            if type(m[1]) == list:
+                list_values = []
+                for c in m[1]:
+                    list_values.append(list(c.values())[0])
+                values = ', '.join(list_values)
+                text += f'{m[0]}: {values}' + '\n'
+            else:
+                text += f'{m[0]}: {m[1]}' + '\n'
+        link_trailer = f'https://kinopoiskapiunofficial.tech/api/v2.1/films/{movie_id}/videos'
+        get_trailer = requests.get(link_trailer, headers=HEADERS_AUTH)
+        get_trailer = get_trailer.json()
 
-	if len(get_trailer['trailers']) != 0:
-		return text, movie_information['posterUrl'], get_trailer['trailers'][0]['url'], movie_id, movie_information['nameRu']
+        if len(get_trailer['trailers']) != 0:
+            return text, movie_information['posterUrl'], get_trailer['trailers'][0]['url'], movie_id, movie_information['nameRu']
 
-	else:
-		return text, movie_information['posterUrl'], False, movie_id, movie_information['nameRu']
+        else:
+            return text, movie_information['posterUrl'], False, movie_id, movie_information['nameRu']
 
 GENRES = ['драма', 'комедия', 'ужасы', 'боевик', 'детектив', 'фантастика', 'документальный', 'мультфильм', 'криминал', 'аниме']
 RATES = ['ТОП-250 фильмов за всё время', 'ТОП-100 популярных фильмов']
@@ -383,19 +389,32 @@ def go_away(callback_query: types.CallbackQuery):
 
 @bot.callback_query_handler(func=lambda c: c.data == 'what')
 def process_callback_button1(callback_query: types.CallbackQuery):
-	bot.answer_callback_query(callback_query.id)
-	global movie_id
-	global movie_name
-	text, poster, trailer, movie_id, movie_name = get_recommendation(callback_query.from_user.id)
-	bot.send_message(callback_query.from_user.id, text)
-	bot.send_photo(callback_query.from_user.id, poster)
-	if trailer != False:
-		bot.send_message(callback_query.from_user.id, f'Трейлер фильма:\n{trailer}')
-	markup_data = types.InlineKeyboardMarkup(row_width=1)
-	again = types.InlineKeyboardButton('Дальше', callback_data='what')
-	all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
-	markup_data.add(again, all_)
-	bot.send_message(callback_query.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)				
+    bot.answer_callback_query(callback_query.id)
+    global movie_id
+    global movie_name
+    text, poster, trailer, movie_id, movie_name = get_recommendation(callback_query.from_user.id)
+    bot.send_message(callback_query.from_user.id, text)
+    if poster != False:
+        bot.send_photo(callback_query.from_user.id, poster)
+    if trailer != False:
+        bot.send_message(callback_query.from_user.id, f'Трейлер фильма:\n{trailer}')
+    if movie_id != False:
+        markup_data = types.InlineKeyboardMarkup(row_width=1)
+        again = types.InlineKeyboardButton('Дальше', callback_data='what')
+        all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
+        markup_data.add(again, all_)
+        bot.send_message(callback_query.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
+    else:
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        item_genre = types.InlineKeyboardButton('По жанру', callback_data='genre')
+        item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
+        item_year = types.InlineKeyboardButton('По году создания', callback_data='year')
+        item_country = types.InlineKeyboardButton('По стране создания', callback_data='country')
+        i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу',
+                                                 callback_data='what')
+        markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
+        bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
+        USERS.add(message.from_user.id)			
 				
 @bot.callback_query_handler(func=lambda c: True)
 def callback_inline(c):
