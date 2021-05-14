@@ -6,6 +6,7 @@ from dbhelper import init_db
 from dbhelper import add_information
 from dbhelper import add_similar
 from dbhelper import get_movies_ids
+from dbhelper import delete_movie
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
 HEADERS_AUTH = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
@@ -376,6 +377,13 @@ def go_away(callback_query: types.CallbackQuery):
 		movie_id = movie_id,
 		movie_name = movie_name
 	)
+	l = get_movies_ids(user_id=user_id)
+	for i in l:
+		if i[0] == movie_id:
+			delete_movie(
+				user_id=user_id,
+				movie_id=movie_id
+			)
 	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{movie_id}/similars'
 	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
 	get_similars = get_similars.json()
@@ -383,7 +391,6 @@ def go_away(callback_query: types.CallbackQuery):
 		for item in get_similars['items']:
 			movie_id = item['filmId']
 			movie_name = item['nameRu']
-			l = get_movies_ids(user_id=user_id)
 			count = 0
 			for i in l:
 				if movie_id != i[0]: # проверка на то, нет ли данного фильма в рекомендованных пользователю фильмах
