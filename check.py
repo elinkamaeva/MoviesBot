@@ -501,7 +501,7 @@ def send_text(message):
 		item_rate = types.InlineKeyboardButton('По рейтингу', callback_data='rate')
 		item_year = types.InlineKeyboardButton('По году создания', callback_data='year')
 		item_country = types.InlineKeyboardButton('По стране создания', callback_data='country')
-		i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу', callback_data='what') #пока не очень понимаю, как это реализовать
+		i_dont_know = types.InlineKeyboardButton('Я не знаю, что хочу', callback_data='what')
 		markup.add(item_genre, item_rate, item_year, item_country, i_dont_know)
 		bot.send_message(message.chat.id, 'Выберите критерий поиска:', reply_markup=markup)
 		USERS.add(message.from_user.id)
