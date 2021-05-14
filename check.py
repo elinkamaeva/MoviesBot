@@ -487,9 +487,18 @@ def callback_inline(c):
 
 USERS = set()
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
-	bot.reply_to(message, 'Чтобы начать, напиши "привет"')
+	bot.reply_to(message, '''Чтобы начать, напиши "привет".
+Чтобы узнать, что делает наш бот, нажмите /help''')
+
+@bot.message_handler(commands=['help'])
+def send_welcome(message):
+	bot.reply_to(message, '''Привет! Вы используете бот MoviesBot.
+Здесь Вы можете найти фильм в зависимостиот жанра, рейтинга,года создания,страны создания.
+Каждый выбранный фильм будет сохраняться в список Ваших просмотренных фильмов, на основе которых будет формироваться список предложений.
+Чтобы посмотреть предложенные фильмы нажмите кнопку "Я не знаю, что хочу".
+Для начала напиши боту "привет"''')
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
