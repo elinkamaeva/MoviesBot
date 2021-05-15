@@ -9,7 +9,7 @@ from dbhelper import get_movies_ids
 from dbhelper import delete_movie
 
 URL_AUTH = 'https://api.themoviedb.org/3/authentication/token/new'
-HEADERS_AUTH = {'X-API-KEY': 'bdab7229-245c-48d4-a80c-860085430385'}
+HEADERS_AUTH = {'X-API-KEY': 'TOKEN'}
 
 list_of_numbers = []
 
@@ -313,7 +313,7 @@ YEARS = ['1888-1899', '1900-1919', '1920-1939', '1940-1959', '1960-1979', '1980-
 COUNTRIES = ['США', 'Россия', 'СССР', 'Германия', 'Великобритания', 'Франция', 'Италия', 'Япония', 'Бразилия', 'Австралия']
 
 # далее функции для работы самого бота
-TOKEN = '1762716554:AAHSRbHl1BJck-8DMpoXhDCIn9vxi6qMxnc'
+TOKEN = 'TOKEN'
 bot = telebot.TeleBot(TOKEN)
 
 init_db()
