@@ -8,3 +8,4 @@
 - файл **README**
 - Служебные файлы **Procfile, requirements.txt, runtime.txt**
 - файл с программой бота **bot.py**
+- файл с модулем для базы данных **dbhelper.py**
