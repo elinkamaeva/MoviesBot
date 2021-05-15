@@ -368,7 +368,9 @@ def go_away(callback_query: types.CallbackQuery):
 	global movie_id
 	global movie_name
 	list_of_numbers = []
+	
 	bot.send_message(callback_query.from_user.id, 'Приятного просмотра!')
+	
 	user_id = callback_query.from_user.id
 	user_name = callback_query.from_user.username
 	add_information(
@@ -377,6 +379,7 @@ def go_away(callback_query: types.CallbackQuery):
 		movie_id = movie_id,
 		movie_name = movie_name
 	)
+	
 	l = get_movies_ids(user_id=user_id)
 	for i in l:
 		if i[0] == movie_id:
@@ -384,9 +387,11 @@ def go_away(callback_query: types.CallbackQuery):
 				user_id=user_id,
 				movie_id=movie_id
 			)
+			
 	link_similars = f'https://kinopoiskapiunofficial.tech//api/v2.2/films/{movie_id}/similars'
 	get_similars = requests.get(link_similars, headers=HEADERS_AUTH)
 	get_similars = get_similars.json()
+	
 	if len(get_similars['items']) != 0:
 		for item in get_similars['items']:
 			movie_id = item['filmId']
@@ -443,17 +448,13 @@ def callback_inline(c):
 	if c.message:
 		global movie_id
 		global movie_name
-		if c.data.startswith('mood'):
-			num = c.data[-1]
-			f = films_mood.keys()[num]
-			genres_mood = films_mood[f]
-			bot.send_message(c.from_user.id, num)
 
-		elif c.data.startswith('genres'):
+		if c.data.startswith('genres'):
 			markup_data = types.InlineKeyboardMarkup()
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
+			
 			num = int(c.data[-1])
 			genre = GENRES[num]
 			films, poster, trailer, movie_id, movie_name = find_my_genre(genre)
@@ -470,13 +471,14 @@ def callback_inline(c):
 				bot.send_message(c.from_user.id, 'Как вам этот фильм?', reply_markup=markup_data)
 
 		elif c.data.startswith('rates'):
-			num = int(c.data[-1])
-			rate = RATES[num]
-			rate_to_find = ENG_RATES[rate]
 			markup_data = types.InlineKeyboardMarkup()
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
+			
+			num = int(c.data[-1])
+			rate = RATES[num]
+			rate_to_find = ENG_RATES[rate]
 			films, poster, trailer, movie_id, movie_name = find_by_rate(rate_to_find)
 
 			if films == False:
@@ -495,6 +497,7 @@ def callback_inline(c):
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
+			
 			num = int(c.data[-1])
 			year = YEARS[num]
 			films, poster, trailer, movie_id, movie_name = find_by_year(year)
@@ -515,6 +518,7 @@ def callback_inline(c):
 			again = types.InlineKeyboardButton('Дальше', callback_data=c.data)
 			all_ = types.InlineKeyboardButton('Хочу смотреть его', callback_data='Приятного просмотра!')
 			markup_data.add(again, all_)
+			
 			num = int(c.data[-1])
 			country = COUNTRIES[num]
 			films, poster, trailer, movie_id, movie_name = find_by_country(country)
@@ -551,8 +555,7 @@ def send_text(message):
 		name = message.from_user.first_name
 		bot.send_message(message.chat.id, f'Привет, {name}')
 		choose_criterion(message.chat.id, message.from_user.id)	
-	elif message.text.lower() == 'пока':
-		name = message.from_user.first_name
-		bot.send_message(message.chat.id, f'Прощай, создатель {name}')
+	else:
+		bot.send_message(message.chat.id, 'Я Вас не понимаю. Напишите "привет", чтобы бот заработал.')
 
 bot.polling()
