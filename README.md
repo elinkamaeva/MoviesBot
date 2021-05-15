@@ -6,5 +6,5 @@
 
 В корневой директории находятся:
 - файл **README**
-- Служебные файлы **Procfile, requirements.txt, runtime.txt**, необходимые для запуска бота на вебхуках
+- Служебные файлы **Procfile, requirements.txt, runtime.txt**
 - файл с программой бота **bot.py**
